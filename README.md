@@ -17,7 +17,6 @@ Aplikasi mobile berbasis Flutter untuk memudahkan pengelolaan dan penjemputan sa
 * **Frontend:** Flutter & Dart
 * **Backend & Database:** Supabase (PostgreSQL, Authentication, Edge Functions)
 * **AI Engine:** Google Gemini (`gemini-3-flash-preview`) via Supabase Edge Function
-* **State & Konfigurasi:** `--dart-define-from-file` (`env.json`) untuk keamanan kredensial
 
 ---
 
@@ -66,3 +65,4 @@ Aplikasi sudah terhubung langsung ke server Supabase. Silakan jalankan `flutter 
 - [ ] Fitur edit profil pengguna (data diri, alamat tersimpan, dan foto profil)
 - [ ] Sistem notifikasi dan halaman bantuan
 - [ ] Penukaran poin Eco-Wallet ke e-wallet
+
