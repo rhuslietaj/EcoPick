@@ -17,7 +17,6 @@ Aplikasi mobile berbasis Flutter untuk memudahkan pengelolaan dan penjemputan sa
 * **Frontend:** Flutter & Dart
 * **Backend & Database:** Supabase (PostgreSQL, Authentication, Edge Functions)
 * **AI Engine:** Google Gemini (`gemini-3-flash-preview`) via Supabase Edge Function
-* **State & Konfigurasi:** `--dart-define-from-file` (`env.json`) untuk keamanan kredensial
 
 ---
 
