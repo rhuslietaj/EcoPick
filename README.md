@@ -29,7 +29,7 @@ Aplikasi mobile berbasis Flutter untuk memudahkan pengelolaan dan penjemputan sa
 
 ### 2. Instalasi & Konfigurasi
 1. **Clone repositori ini:**
-   `git clone https://github.com/USERNAME-KAMU/ecopick.git`
+   `git clone https://github.com/rhuslietaj/ecopick.git`
    `cd ecopick`
 
 2. **Unduh dependensi Flutter:**
