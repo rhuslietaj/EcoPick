@@ -35,15 +35,16 @@ Aplikasi mobile berbasis Flutter untuk memudahkan pengelolaan dan penjemputan sa
 2. **Unduh dependensi Flutter:**
    `flutter pub get`
 
-3. **Siapkan file konfigurasi lingkungan:**
-   Salin file `env.example.json` menjadi `env.json` di folder root proyek, lalu isi dengan kredensial Supabase milikmu:
-   `{"SUPABASE_URL": "https://xxxxxxxx.supabase.co", "SUPABASE_KEY": "isi-publishable-key-di-sini"}`
-
-4. **Jalankan aplikasi:**
-   `flutter run --dart-define-from-file=env.json`
-   *(Catatan: Kunci API Gemini disimpan aman di **Supabase Secrets** dengan nama `GEMINI_API_KEY` dan dipanggil melalui Edge Function `scan`, sehingga tidak tertanam di kode aplikasi).*
+3. **Jalankan aplikasi:**
+   `flutter run`
+   *(Catatan: Konfigurasi koneksi ke Supabase sudah terpasang secara default sehingga aplikasi dapat langsung dijalankan.).*
 
 ---
+
+## Akun Demo 
+Aplikasi sudah terhubung langsung ke server Supabase. Silakan jalankan `flutter run` dan masuk menggunakan akun berikut (atau daftar akun baru langsung di aplikasi):
+* **Email:** `User@gmail.com`
+* **Password:** `Password123!`
 
 ## Struktur Proyek
 * `lib/screens/` — Halaman UI (Login/Entry, Home, Scan, Pickup)
