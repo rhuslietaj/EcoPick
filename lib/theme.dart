@@ -1,4 +1,4 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class C {
@@ -17,18 +17,8 @@ class C {
 }
 
 /// Gaya judul/angka besar (Fredoka, bulat dan tebal).
-TextStyle disp(
-  double size, {
-  Color color = C.ink,
-  double height = 1.05,
-  double spacing = -.3,
-}) => GoogleFonts.fredoka(
-  fontSize: size,
-  fontWeight: FontWeight.w700,
-  color: color,
-  height: height,
-  letterSpacing: spacing,
-);
+TextStyle disp(double size, {Color color = C.ink, double height = 1.05, double spacing = -.3}) =>
+    GoogleFonts.fredoka(fontSize: size, fontWeight: FontWeight.w700, color: color, height: height, letterSpacing: spacing);
 
 ThemeData buildTheme() {
   // Tidak memakai GoogleFonts.xxxTextTheme(): tipe TextTheme-nya bisa bentrok

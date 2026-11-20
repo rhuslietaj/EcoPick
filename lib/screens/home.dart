@@ -1,4 +1,4 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 import '../art.dart';
 import '../characters.dart';
@@ -14,7 +14,7 @@ class HomeShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<int>(
     valueListenable: tab,
-    builder: (_, i, _) => Scaffold(
+    builder: (_, i, __) => Scaffold(
       extendBody: true,
       body: Backdrop(
         child: SafeArea(
@@ -304,23 +304,28 @@ class DashboardTab extends StatelessWidget {
               _Quick(
                 Icons.center_focus_strong_rounded,
                 'Scan',
-                C.mint,
+                const Color(0xFFB7E58B),
                 () => Navigator.push(context, fade(const ScanScreen())),
               ),
-              _Quick(Icons.local_shipping_rounded, 'Pickup', C.mint, () {
-                app.resetDraft();
-                Navigator.push(context, fade(const PickupFlow()));
-              }),
+              _Quick(
+                Icons.local_shipping_rounded,
+                'Pickup',
+                const Color(0xFFB7E58B),
+                () {
+                  app.resetDraft();
+                  Navigator.push(context, fade(const PickupFlow()));
+                },
+              ),
               _Quick(
                 Icons.menu_book_rounded,
                 'Edukasi',
-                C.mint,
+                const Color(0xFFB7E58B),
                 () => _education(context),
               ),
               _Quick(
                 Icons.payments_rounded,
                 'Tukar',
-                C.mint,
+                const Color(0xFFB7E58B),
                 () => tab.value = 3,
               ),
             ],
@@ -343,7 +348,7 @@ class DashboardTab extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             clipBehavior: Clip.none,
             itemCount: wasteTypes.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 12),
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (_, i) {
               final t = wasteTypes[i];
               return SizedBox(
@@ -393,6 +398,14 @@ class DashboardTab extends StatelessWidget {
           ),
         ),
         const SectionTitle('Aktivitas terakhir'),
+        if (app.history.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Text(
+              'Belum ada aktivitas. Mulai dengan scan sampah pertamamu.',
+              style: TextStyle(color: C.muted, fontWeight: FontWeight.w500),
+            ),
+          ),
         for (final r in app.history.take(2)) PickupTile(r),
         const Padding(
           padding: EdgeInsets.only(top: 6, left: 2),
@@ -698,13 +711,18 @@ class _Quick extends StatelessWidget {
 // ======================================================== Dampak
 class ImpactTab extends StatelessWidget {
   const ImpactTab({super.key});
-  static const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+
+  /// Label 7 hari terakhir; indeks 6 = hari ini.
+  static String dayLabel(int i) {
+    const names = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+    return names[DateTime.now().subtract(Duration(days: 6 - i)).weekday - 1];
+  }
 
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: app,
     builder: (context, _) {
-      final maxW = app.weekly.reduce((a, b) => a > b ? a : b);
+      final maxW = app.weekly.fold<double>(1.0, (a, b) => a > b ? a : b);
       final lvl = app.totalKg < 10
           ? ('Eco Starter', 10.0)
           : app.totalKg < 30
@@ -739,7 +757,7 @@ class ImpactTab extends StatelessWidget {
                     tween: Tween(begin: 0, end: app.totalKg / app.monthlyGoal),
                     duration: const Duration(milliseconds: 1100),
                     curve: Curves.easeOutCubic,
-                    builder: (_, v, _) => CustomPaint(
+                    builder: (_, v, __) => CustomPaint(
                       painter: RingPainter(v, bg: Colors.white12, fg: C.lime),
                       child: Center(
                         child: Column(
@@ -836,7 +854,7 @@ class ImpactTab extends StatelessWidget {
                             tween: Tween(begin: 0, end: app.weekly[i] / maxW),
                             duration: Duration(milliseconds: 700 + i * 90),
                             curve: Curves.easeOutCubic,
-                            builder: (_, v, _) => Container(
+                            builder: (_, v, __) => Container(
                               height: 100 * v + 6,
                               margin: const EdgeInsets.symmetric(horizontal: 6),
                               decoration: BoxDecoration(
@@ -853,7 +871,7 @@ class ImpactTab extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            days[i],
+                            dayLabel(i),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
@@ -871,6 +889,14 @@ class ImpactTab extends StatelessWidget {
           SoftCard(
             child: Column(
               children: [
+                if (app.breakdown.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      'Belum ada pickup selesai.',
+                      style: TextStyle(color: C.muted),
+                    ),
+                  ),
                 for (final e in app.breakdown.entries)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -901,7 +927,7 @@ class ImpactTab extends StatelessWidget {
                             tween: Tween(begin: 0, end: e.value / app.totalKg),
                             duration: const Duration(milliseconds: 900),
                             curve: Curves.easeOutCubic,
-                            builder: (_, v, _) => LinearProgressIndicator(
+                            builder: (_, v, __) => LinearProgressIndicator(
                               value: v,
                               minHeight: 9,
                               backgroundColor: C.mint.withValues(alpha: .6),
@@ -1299,17 +1325,19 @@ class _WithdrawSheetState extends State<_WithdrawSheet> {
         const SizedBox(height: 20),
         PButton(
           'Cairkan Sekarang',
-          onTap: () {
+          onTap: () async {
             if (app.points < amt) {
               toast(context, 'Poin belum cukup');
               return;
             }
-            // TODO: panggil API pencairan
-            app.withdraw(providers[p].$1, amt);
+            final ok = await app.withdraw(providers[p].$1, amt);
+            if (!context.mounted) return;
             Navigator.pop(context);
             toast(
               context,
-              'Permintaan pencairan ke ${providers[p].$1} dikirim',
+              ok
+                  ? 'Permintaan pencairan ke ${providers[p].$1} dicatat'
+                  : 'Gagal mencatat pencairan. Periksa koneksi internet.',
             );
           },
         ),

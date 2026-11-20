@@ -1,50 +1,27 @@
 // Semua aset visual digambar dengan CustomPainter: tanpa emoji, tanpa file gambar.
 import 'dart:math' as math;
-
-import 'package:material_ui/material_ui.dart';
-
+import 'package:flutter/material.dart';
 import 'characters.dart';
 import 'theme.dart';
 
 void drawLeaf(Canvas cv, Offset c, double r, Paint fill, Paint vein) {
   final p = Path()
     ..moveTo(c.dx - r * .8, c.dy + r * .8)
-    ..quadraticBezierTo(
-      c.dx - r * 1.0,
-      c.dy - r * .7,
-      c.dx + r * .85,
-      c.dy - r * .85,
-    )
-    ..quadraticBezierTo(
-      c.dx + r * .95,
-      c.dy + r * .75,
-      c.dx - r * .8,
-      c.dy + r * .8,
-    )
+    ..quadraticBezierTo(c.dx - r * 1.0, c.dy - r * .7, c.dx + r * .85, c.dy - r * .85)
+    ..quadraticBezierTo(c.dx + r * .95, c.dy + r * .75, c.dx - r * .8, c.dy + r * .8)
     ..close();
   cv.drawPath(p, fill);
-  cv.drawLine(
-    Offset(c.dx - r * .8, c.dy + r * .8),
-    Offset(c.dx + r * .35, c.dy - r * .35),
-    vein,
-  );
+  cv.drawLine(Offset(c.dx - r * .8, c.dy + r * .8), Offset(c.dx + r * .35, c.dy - r * .35), vein);
 }
 
 // ---------------------------------------------------------------- Logo
 class Logo extends StatelessWidget {
   final double size;
   final Color color, accent;
-  const Logo({
-    super.key,
-    this.size = 64,
-    this.color = C.forest,
-    this.accent = C.lime,
-  });
+  const Logo({super.key, this.size = 64, this.color = C.forest, this.accent = C.lime});
   @override
-  Widget build(BuildContext context) => CustomPaint(
-    size: Size.square(size),
-    painter: _LogoPainter(color, accent),
-  );
+  Widget build(BuildContext context) =>
+      CustomPaint(size: Size.square(size), painter: _LogoPainter(color, accent));
 }
 
 class _LogoPainter extends CustomPainter {
@@ -79,21 +56,19 @@ class _LogoPainter extends CustomPainter {
     _head(cv, c, r * .82, math.pi * .70, r, fill);
     _head(cv, c, r * .82, math.pi * 1.70, r, fill);
     drawLeaf(
-      cv,
-      c,
-      r * .34,
-      Paint()..color = accent,
-      Paint()
-        ..color = color
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = r * .05
-        ..strokeCap = StrokeCap.round,
-    );
+        cv,
+        c,
+        r * .34,
+        Paint()..color = accent,
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = r * .05
+          ..strokeCap = StrokeCap.round);
   }
 
   @override
-  bool shouldRepaint(covariant _LogoPainter o) =>
-      o.color != color || o.accent != accent;
+  bool shouldRepaint(covariant _LogoPainter o) => o.color != color || o.accent != accent;
 }
 
 // ---------------------------------------------------------------- Ikon jenis sampah
@@ -101,18 +76,11 @@ class WasteIcon extends StatelessWidget {
   final String type;
   final double size;
   final Color color, detail;
-  const WasteIcon(
-    this.type, {
-    super.key,
-    this.size = 48,
-    this.color = C.pine,
-    this.detail = const Color(0x99FFFFFF),
-  });
+  const WasteIcon(this.type,
+      {super.key, this.size = 48, this.color = C.pine, this.detail = const Color(0x99FFFFFF)});
   @override
-  Widget build(BuildContext context) => CustomPaint(
-    size: Size.square(size),
-    painter: _WastePainter(type, color, detail),
-  );
+  Widget build(BuildContext context) =>
+      CustomPaint(size: Size.square(size), painter: _WastePainter(type, color, detail));
 }
 
 class _WastePainter extends CustomPainter {
@@ -131,10 +99,7 @@ class _WastePainter extends CustomPainter {
       ..strokeWidth = w * .035
       ..strokeCap = StrokeCap.round;
     RRect rr(double x, double y, double ww, double hh, double r) =>
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(x * w, y * h, ww * w, hh * h),
-          Radius.circular(r * w),
-        );
+        RRect.fromRectAndRadius(Rect.fromLTWH(x * w, y * h, ww * w, hh * h), Radius.circular(r * w));
 
     switch (type) {
       case 'plastik':
@@ -148,19 +113,12 @@ class _WastePainter extends CustomPainter {
         cv.translate(w * .5, h * .5);
         cv.rotate(-.2);
         cv.translate(-w * .5, -h * .5);
-        cv.drawRRect(
-          rr(.22, .12, .46, .66, .05),
-          Paint()..color = c.withValues(alpha: .45),
-        );
+        cv.drawRRect(rr(.22, .12, .46, .66, .05), Paint()..color = c.withValues(alpha: .45));
         cv.restore();
         cv.drawRRect(rr(.30, .20, .46, .68, .05), f);
         for (var i = 0; i < 4; i++) {
           final y = h * (.36 + i * .12);
-          cv.drawLine(
-            Offset(w * .38, y),
-            Offset(w * (i == 3 ? .56 : .68), y),
-            st,
-          );
+          cv.drawLine(Offset(w * .38, y), Offset(w * (i == 3 ? .56 : .68), y), st);
         }
         break;
       case 'kaleng':
@@ -188,8 +146,7 @@ class _WastePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _WastePainter o) =>
-      o.type != type || o.c != c || o.d != d;
+  bool shouldRepaint(covariant _WastePainter o) => o.type != type || o.c != c || o.d != d;
 }
 
 // ---------------------------------------------------------------- Ilustrasi truk
@@ -206,37 +163,23 @@ class _TruckPainter extends CustomPainter {
   void paint(Canvas cv, Size s) {
     final w = s.width, h = s.height;
     RRect rr(double x, double y, double ww, double hh, double r) =>
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(x * w, y * h, ww * w, hh * h),
-          Radius.circular(r * w),
-        );
-    cv.drawOval(
-      Rect.fromLTWH(w * .04, h * .90, w * .92, h * .09),
-      Paint()..color = Colors.black.withValues(alpha: .18),
-    );
+        RRect.fromRectAndRadius(Rect.fromLTWH(x * w, y * h, ww * w, hh * h), Radius.circular(r * w));
+    cv.drawOval(Rect.fromLTWH(w * .04, h * .90, w * .92, h * .09), Paint()..color = Colors.black.withValues(alpha: .18));
     cv.drawRRect(rr(.04, .12, .60, .64, .05), Paint()..color = C.mint);
     cv.drawRRect(rr(.66, .30, .30, .46, .05), Paint()..color = C.lime);
-    cv.drawRRect(
-      rr(.74, .37, .16, .16, .02),
-      Paint()..color = C.forest.withValues(alpha: .75),
-    );
+    cv.drawRRect(rr(.74, .37, .16, .16, .02), Paint()..color = C.forest.withValues(alpha: .75));
     drawLeaf(
-      cv,
-      Offset(w * .34, h * .44),
-      w * .11,
-      Paint()..color = C.leaf,
-      Paint()
-        ..color = C.forest
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = w * .012
-        ..strokeCap = StrokeCap.round,
-    );
+        cv,
+        Offset(w * .34, h * .44),
+        w * .11,
+        Paint()..color = C.leaf,
+        Paint()
+          ..color = C.forest
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = w * .012
+          ..strokeCap = StrokeCap.round);
     for (final x in [.22, .78]) {
-      cv.drawCircle(
-        Offset(w * x, h * .80),
-        w * .085,
-        Paint()..color = C.forest,
-      );
+      cv.drawCircle(Offset(w * x, h * .80), w * .085, Paint()..color = C.forest);
       cv.drawCircle(Offset(w * x, h * .80), w * .04, Paint()..color = C.mint);
     }
   }
@@ -252,30 +195,19 @@ class BlobPainter extends CustomPainter {
 
   void _blob(Canvas cv, Offset c, double r, Color col) {
     cv.drawCircle(
-      c,
-      r,
-      Paint()
-        ..shader = RadialGradient(colors: [col, col.withValues(alpha: 0)])
-            .createShader(Rect.fromCircle(center: c, radius: r)),
-    );
+        c,
+        r,
+        Paint()
+          ..shader = RadialGradient(colors: [col, col.withValues(alpha: 0)])
+              .createShader(Rect.fromCircle(center: c, radius: r)));
   }
 
   @override
   void paint(Canvas cv, Size s) {
     final w = s.width, h = s.height;
     if (dark) {
-      _blob(
-        cv,
-        Offset(w * .95, h * .05),
-        w * .65,
-        C.lime.withValues(alpha: .20),
-      );
-      _blob(
-        cv,
-        Offset(w * .0, h * .85),
-        w * .55,
-        C.leaf.withValues(alpha: .35),
-      );
+      _blob(cv, Offset(w * .95, h * .05), w * .65, C.lime.withValues(alpha: .20));
+      _blob(cv, Offset(w * .0, h * .85), w * .55, C.leaf.withValues(alpha: .35));
     } else {
       _blob(cv, Offset(w * .98, h * .02), w * .6, C.sun.withValues(alpha: .42));
       _blob(cv, Offset(w * .0, h * .55), w * .5, C.mint.withValues(alpha: .6));
@@ -294,13 +226,7 @@ class MapPainter extends CustomPainter {
 
   Path route(Size s) {
     Offset p(double x, double y) => Offset(x * s.width, y * s.height);
-    final pts = [
-      p(.12, .55),
-      p(.12, .38),
-      p(.50, .38),
-      p(.50, .20),
-      p(.84, .20),
-    ];
+    final pts = [p(.12, .55), p(.12, .38), p(.50, .38), p(.50, .20), p(.84, .20)];
     final path = Path()..moveTo(pts.first.dx, pts.first.dy);
     for (final o in pts.skip(1)) {
       path.lineTo(o.dx, o.dy);
@@ -327,12 +253,11 @@ class MapPainter extends CustomPainter {
       ..moveTo(0, h * .74)
       ..cubicTo(w * .3, h * .62, w * .6, h * .86, w, h * .70);
     cv.drawPath(
-      river,
-      Paint()
-        ..color = const Color(0xFFCBE5EC)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 24,
-    );
+        river,
+        Paint()
+          ..color = const Color(0xFFCBE5EC)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 24);
 
     final road = Paint()
       ..color = Colors.white
@@ -358,25 +283,23 @@ class MapPainter extends CustomPainter {
 
     final path = route(s);
     cv.drawPath(
-      path,
-      Paint()
-        ..color = C.leaf.withValues(alpha: .35)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 8
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round,
-    );
-    final m = path.computeMetrics().first;
-    if (courier && t > 0) {
-      cv.drawPath(
-        m.extractPath(0, m.length * t),
+        path,
         Paint()
-          ..color = C.pine
+          ..color = C.leaf.withValues(alpha: .35)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 8
           ..strokeCap = StrokeCap.round
-          ..strokeJoin = StrokeJoin.round,
-      );
+          ..strokeJoin = StrokeJoin.round);
+    final m = path.computeMetrics().first;
+    if (courier && t > 0) {
+      cv.drawPath(
+          m.extractPath(0, m.length * t),
+          Paint()
+            ..color = C.pine
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 8
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round);
     }
 
     final dest = m.getTangentForOffset(m.length)!.position;
@@ -390,11 +313,7 @@ class MapPainter extends CustomPainter {
       cv.drawCircle(start, 4, Paint()..color = Colors.white);
     } else {
       final pos = m.getTangentForOffset(m.length * t)!.position;
-      cv.drawCircle(
-        pos,
-        20 + pulse * 22,
-        Paint()..color = C.leaf.withValues(alpha: (1 - pulse) * .35),
-      );
+      cv.drawCircle(pos, 20 + pulse * 22, Paint()..color = C.leaf.withValues(alpha: (1 - pulse) * .35));
       cv.save();
       cv.translate(pos.dx - 33, pos.dy - 25);
       paintKuri(cv, const Size(66, 46));
@@ -419,13 +338,7 @@ class RingPainter extends CustomPainter {
       ..strokeWidth = 14
       ..strokeCap = StrokeCap.round;
     cv.drawArc(rect, 0, math.pi * 2, false, p..color = bg);
-    cv.drawArc(
-      rect,
-      -math.pi / 2,
-      math.pi * 2 * progress.clamp(0, 1),
-      false,
-      p..color = fg,
-    );
+    cv.drawArc(rect, -math.pi / 2, math.pi * 2 * progress.clamp(0, 1), false, p..color = fg);
   }
 
   @override
@@ -442,11 +355,7 @@ class MarkPainter extends CustomPainter {
   void paint(Canvas cv, Size s) {
     final w = s.width, h = s.height;
     final r = w / 2 * Curves.easeOutBack.transform(math.min(1.0, t * 1.7));
-    cv.drawCircle(
-      s.center(Offset.zero),
-      r * 1.0,
-      Paint()..color = bg.withValues(alpha: .18),
-    );
+    cv.drawCircle(s.center(Offset.zero), r * 1.0, Paint()..color = bg.withValues(alpha: .18));
     cv.drawCircle(s.center(Offset.zero), r * .78, Paint()..color = bg);
     final path = Path();
     if (ok) {

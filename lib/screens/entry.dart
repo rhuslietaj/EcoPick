@@ -1,8 +1,10 @@
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' show AuthException;
 
 import '../art.dart';
 import '../characters.dart';
 import '../state.dart';
+import '../supa.dart';
 import '../theme.dart';
 import '../widgets.dart';
 import 'home.dart';
@@ -111,7 +113,7 @@ class _SplashScreenState extends State<SplashScreen>
               width: 140,
               child: AnimatedBuilder(
                 animation: c,
-                builder: (_, _) => ClipRRect(
+                builder: (_, __) => ClipRRect(
                   borderRadius: BorderRadius.circular(4),
                   child: LinearProgressIndicator(
                     value: c.value,
@@ -130,6 +132,19 @@ class _SplashScreenState extends State<SplashScreen>
 }
 
 // ======================================================== Login / Register
+String _authMsg(String m) {
+  final s = m.toLowerCase();
+  if (s.contains('invalid login')) return 'Email atau kata sandi salah.';
+  if (s.contains('already registered') || s.contains('already been registered'))
+    return 'Email ini sudah terdaftar. Silakan masuk.';
+  if (s.contains('email not confirmed'))
+    return 'Email belum diverifikasi. Cek kotak masuk emailmu.';
+  if (s.contains('rate limit'))
+    return 'Terlalu sering mencoba. Tunggu sebentar.';
+  if (s.contains('password')) return 'Kata sandi minimal 6 karakter.';
+  return m;
+}
+
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
   @override
@@ -137,7 +152,7 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  bool reg = false, hide = true;
+  bool reg = false, hide = true, busy = false;
   final name = TextEditingController();
   final email = TextEditingController();
   final phone = TextEditingController();
@@ -153,7 +168,8 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> submit() async {
-    if (email.text.trim().isEmpty ||
+    final mail = email.text.trim();
+    if (mail.isEmpty ||
         pass.text.isEmpty ||
         (reg && name.text.trim().isEmpty)) {
       toast(context, 'Lengkapi data terlebih dahulu');
@@ -163,17 +179,45 @@ class _AuthScreenState extends State<AuthScreen> {
       toast(context, 'Konfirmasi kata sandi tidak sama');
       return;
     }
-    // TODO: ganti dengan panggilan API autentikasi (package http)
-    var n = reg ? name.text.trim() : email.text.trim().split('@').first;
-    if (n.isEmpty) n = 'Pengguna';
-    n = n[0].toUpperCase() + n.substring(1);
-    await app.login(n, email.text.trim());
-    if (!mounted) return;
-    Navigator.pushAndRemoveUntil(
-      context,
-      fade(const HomeShell()),
-      (r) => false,
-    );
+    if (reg && pass.text.length < 6) {
+      toast(context, 'Kata sandi minimal 6 karakter');
+      return;
+    }
+    setState(() => busy = true);
+    try {
+      if (reg) {
+        final perluVerifikasi = await app.register(
+          fullName: name.text.trim(),
+          email: mail,
+          phone: phone.text.trim(),
+          password: pass.text,
+        );
+        if (perluVerifikasi) {
+          if (!mounted) return;
+          toast(
+            context,
+            'Akun dibuat. Cek emailmu untuk verifikasi, lalu masuk.',
+          );
+          setState(() => reg = false);
+          return;
+        }
+      } else {
+        await app.login(email: mail, password: pass.text);
+      }
+      if (!mounted) return;
+      Navigator.pushAndRemoveUntil(
+        context,
+        fade(const HomeShell()),
+        (r) => false,
+      );
+    } on AuthException catch (e) {
+      if (mounted) toast(context, _authMsg(e.message));
+    } catch (_) {
+      if (mounted)
+        toast(context, 'Gagal terhubung ke server. Periksa koneksi internet.');
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
   }
 
   Widget _seg(String label, bool active, VoidCallback onTap) => Expanded(
@@ -370,10 +414,23 @@ class _AuthScreenState extends State<AuthScreen> {
                     )
                   else
                     const SizedBox(height: 14),
+                  if (!supaConfigured)
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        'Mode demo',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: C.muted,
+                          fontSize: 12,
+                          height: 1.35,
+                        ),
+                      ),
+                    ),
                   PButton(
-                    reg ? 'Daftar Sekarang' : 'Masuk',
+                    busy ? 'Memproses...' : (reg ? 'Daftar Sekarang' : 'Masuk'),
                     icon: Icons.arrow_forward_rounded,
-                    onTap: submit,
+                    onTap: busy ? null : submit,
                   ),
                   const SizedBox(height: 18),
                   const Row(
