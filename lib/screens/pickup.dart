@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 
 import '../art.dart';
@@ -134,11 +134,10 @@ class _ScanScreenState extends State<ScanScreen>
   });
 
   Widget _preview() {
-    if (camLoading) {
+    if (camLoading)
       return const Center(
         child: CircularProgressIndicator(color: C.lime, strokeWidth: 3),
       );
-    }
     if (cam != null) return Center(child: CameraPreview(cam!));
     return Center(
       child: Transform.translate(
@@ -165,7 +164,7 @@ class _ScanScreenState extends State<ScanScreen>
               child: Center(
                 child: AnimatedBuilder(
                   animation: c,
-                  builder: (_, _) => Container(
+                  builder: (_, __) => Container(
                     width: 290,
                     height: 320,
                     decoration: BoxDecoration(
@@ -334,7 +333,7 @@ class _ScanScreenState extends State<ScanScreen>
                   onTap: img != null ? () => _analyze(img!) : _reset,
                 ),
               ),
-              if (!ScanService.hasKey) ...[
+              if (!ScanService.available) ...[
                 const SizedBox(width: 12),
                 Expanded(
                   flex: 2,
@@ -411,7 +410,7 @@ class _ScanScreenState extends State<ScanScreen>
                     children: [
                       Expanded(
                         child: PButton(
-                          'Pindai Ulang',
+                          'Ulangi',
                           style: PStyle.ghost,
                           onTap: _reset,
                         ),
@@ -901,7 +900,7 @@ class _TrackingScreenState extends State<TrackingScreen>
         Positioned.fill(
           child: AnimatedBuilder(
             animation: Listenable.merge([move, pulse]),
-            builder: (_, _) => CustomPaint(
+            builder: (_, __) => CustomPaint(
               painter: MapPainter(
                 t: Curves.easeInOut.transform(move.value) * .92,
                 pulse: pulse.value,
@@ -950,7 +949,7 @@ class _TrackingScreenState extends State<TrackingScreen>
                 const SizedBox(height: 18),
                 AnimatedBuilder(
                   animation: move,
-                  builder: (_, _) => Row(
+                  builder: (_, __) => Row(
                     children: [
                       Expanded(
                         child: Text('Kurir menuju lokasimu', style: disp(22)),
@@ -1100,7 +1099,14 @@ class _ResultScreenState extends State<ResultScreen>
   void initState() {
     super.initState();
     if (widget.ok) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => app.completePickup());
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final ok = await app.completePickup();
+        if (!ok && mounted)
+          toast(
+            context,
+            'Gagal menyimpan ke server. Periksa koneksi internet.',
+          );
+      });
     }
   }
 
@@ -1154,7 +1160,7 @@ class _ResultScreenState extends State<ResultScreen>
                       bottom: 4,
                       child: AnimatedBuilder(
                         animation: c,
-                        builder: (_, _) => CustomPaint(
+                        builder: (_, __) => CustomPaint(
                           size: const Size(66, 66),
                           painter: MarkPainter(
                             c.value,
