@@ -1,9 +1,10 @@
-//   Piko : tunas hijau bulat, maskot utama ecopick
-//   Bino : tong sampah
-//   Kuri : truk kurir
+// Karakter EcoPick, semuanya digambar dengan CustomPainter (tanpa emoji, tanpa file gambar).
+//   Piko : tunas hijau bulat, maskot utama
+//   Bino : tong daur ulang yang ramah
+//   Kuri : truk kurir bermata besar
 import 'dart:math' as math;
 
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 import 'art.dart';
 import 'theme.dart';
@@ -53,7 +54,7 @@ class _MascotState extends State<Mascot> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: c,
-    builder: (_, _) {
+    builder: (_, __) {
       final bob = math.sin(c.value * math.pi * 2) * widget.size * .022;
       return Transform.translate(
         offset: Offset(0, bob),
